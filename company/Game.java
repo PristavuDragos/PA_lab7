@@ -4,6 +4,8 @@ import java.util.*;
 
 public class Game
 {
+    long gameTimer=0;
+    long gameTimeCap=15;
     int nrOfTokens;
     int progressionLengthGoal;
     int tokenValueRange;
@@ -11,7 +13,9 @@ public class Game
     Board gameBoard;
     Player[] players;
     Thread[] threads;
-
+    Timer timerDaemon;
+    TimerTask displayTime;
+    TimerTask timesUP;
     public Game(int nrOfTokens, int progressionLengthGoal, int tokenValueRange)
     {
         this.nrOfTokens = nrOfTokens;
@@ -75,8 +79,30 @@ public class Game
             allTokens.remove(tempNR);
         }
         gameBoard=new Board(gameTokens,this);
+        System.out.println(gameBoard.tokens);
         //start player threads
-
+        timesUP=new TimerTask()
+        {
+            @Override
+            public void run()
+            {
+                timerDaemon.cancel();
+            }
+        };
+        displayTime=new TimerTask()
+        {
+            @Override
+            public void run()
+            {
+                gameTimer+=5;
+                if (gameTimer%60<10)System.out.println("Time elapsed: 0"+gameTimer/60+":0"+gameTimer%60);
+                else
+                System.out.println("Time elapsed: 0"+gameTimer/60+":"+gameTimer%60);
+            }
+        };
+        timerDaemon=new Timer(true);
+        timerDaemon.schedule(displayTime,0,5000);
+        timerDaemon.schedule(timesUP,gameTimeCap*1000);
         for (int i=0;i<players.length;i++)
         {
             threads[i]=new Thread(players[i]);
@@ -84,15 +110,23 @@ public class Game
             threads[i].start();
         }
 
-        while (gameBoard.tokens.size()>0) { }
+        while (gameBoard.tokens.size()>0 && gameTimer<gameTimeCap) {
+            System.out.flush();
+        }
         try
         {
-            Thread.sleep(100);
+            Thread.sleep(200);
         } catch (InterruptedException e)
         {
             e.printStackTrace();
         }
-        System.out.println("GameFinished");
+        if(gameBoard.tokens.size()>0) System.out.println("Time's up!");
+            else System.out.println("GameFinished!");
+        for(int i=0;i<players.length;i++)
+        {
+            System.out.println(players[i].name+" "+players[i].myTokens);
+        }
+        System.out.flush();
         System.exit(0);
     }
 }

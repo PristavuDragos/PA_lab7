@@ -33,7 +33,13 @@ public class Board
         }
         if(tokens.size()>0)
         {
-            int nr = (int) (Math.random() * 10000) % (tokens.size());
+
+            int nr =-1;
+            while (nr==-1)
+            {
+                nr=p.drawMethod();
+                if (nr==-1) System.out.println("The value requested is not valid!");
+            }
             Token tk = tokens.get(nr);
             tokens.remove(nr);
             game.nextPlayer();
@@ -41,5 +47,13 @@ public class Board
             System.out.println(p.name+" draws.");
             p.myTokens.add(tk);
         }
+    }
+
+    @Override
+    public String toString()
+    {
+        return "Board{" +
+                "tokens=" + tokens +
+                '}';
     }
 }

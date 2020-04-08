@@ -35,9 +35,7 @@ public class Token implements Comparable<Token>
     @Override
     public String toString()
     {
-        return "Token{" +
-                "value=" + value +
-                ", isBlank=" + isBlank +
-                '}';
+        if (isBlank) return "Token{blank}";
+        else return "Token{"+value+"}";
     }
 }

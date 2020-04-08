@@ -3,7 +3,7 @@ package com.company;
 import java.util.Set;
 import java.util.TreeSet;
 
-public class Player implements Runnable
+public abstract class Player implements Runnable
 {
     String name;
     Game game;
@@ -44,10 +44,18 @@ public class Player implements Runnable
     @Override
     public void run()
     {
-        while (game.gameBoard.tokens.size()>0)
+        while (game.gameBoard.tokens.size()>0 && game.gameTimer<game.gameTimeCap)
         {
+            try
+            {
+                Thread.sleep(500);
+            } catch (InterruptedException e)
+            {
+                e.printStackTrace();
+            }
             game.gameBoard.drawPiece(this);
         }
-        System.out.println(name+myTokens.toString());
+       // System.out.println(name+myTokens.toString());
     }
+    public abstract int drawMethod();
 }
